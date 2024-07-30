@@ -25,15 +25,21 @@ exports.Categories = mongoose.model('Categories', new mongoose.Schema({
 },{timestamps : true}))
 
 exports.Items = mongoose.model('Items', new mongoose.Schema({
-    item_category_id : mongoose.Schema.Types.ObjectId,
+    item_category_id : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Categories" 
+    },
     item_name : String,
     item_description : String,
     item_available : Boolean,
     allow_variation : Boolean,
-    item_category_id : mongoose.Schema.Types.ObjectId,
     discount : String,
     price : String,
     is_addon : Boolean,
+    variation_types : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Variation"
+    },
     addon : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : "Addon"
@@ -44,9 +50,20 @@ exports.Items = mongoose.model('Items', new mongoose.Schema({
     gst_type : [String],
 },{timestamps : true}))
 
-// exports.addon = mongoose.model('Addon', new mongoose.Schema({ 
-    // pending need to understand addon type
-// }))
+
+
+exports.Addon = mongoose.model('Addon', new mongoose.Schema({
+    addon_name : String,
+    quanity : String,
+    description : String,
+    price : String
+}))
+
+
+exports.Variation = mongoose.model('Variation', new mongoose.Schema({
+    name : String,
+    data : String
+}))
 
 exports.GstType = mongoose.model("Gst_Type", new mongoose.Schema({
     gst_id : Number,
