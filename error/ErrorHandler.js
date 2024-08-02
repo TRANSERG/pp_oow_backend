@@ -12,3 +12,6 @@ class ErrorHandler extends Error {
 }
 
 module.exports = ErrorHandler
+
+
+// currently not in use

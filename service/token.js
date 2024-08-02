@@ -26,8 +26,8 @@ exports.refreshTokenOptions = {
     sameSite: 'Lax'
 };
 
-exports.sendToken =async  (res, user, message , statusCode) => {
-    
+exports.sendToken = async (res, user, message, statusCode) => {
+
     let accessToken = generateAccessToken(user._id);
     let refreshToken = generateRefreshToken(user._id);
 
@@ -39,10 +39,35 @@ exports.sendToken =async  (res, user, message , statusCode) => {
         await client.set(user._id.toString(), JSON.stringify(user), 'EX', 2 * 24 * 60 * 60); // Set expiry of 2 days
         res.cookie("access_token", accessToken, exports.accessTokenOptions);
         res.cookie("refresh_token", refreshToken, exports.refreshTokenOptions);
-    
+
         response(res, message, { accessToken, refreshToken, user }, statusCode);
-      } catch (err) {
+    } catch (err) {
         console.error('Error setting value in Redis:', err);
         response(res, 'Login failed', null, 500);
-      }
+    }
 };
+
+exports.clearToken = async (res, message, statusCode) => {
+    try {
+
+
+        res.cookie("access_token", '', {
+            expires: new Date(Date.now() + 1),
+            maxAge: 1,
+            httpOnly: true,
+            sameSite: 'Lax'
+        });
+
+        res.cookie("refresh_token", '', {
+            expires: new Date(Date.now() + 1),
+            maxAge: 1,
+            httpOnly: true,
+            sameSite: 'Lax'
+        });
+
+        response(res, message, {}, statusCode);
+
+    } catch (error) {
+        response(res, error.message, error, statusCode);
+    }
+}

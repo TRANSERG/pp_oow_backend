@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const generateOtp = require("../service/generateOtp");
 const { response } = require("../service/Response");
 const bcrypt = require('bcryptjs');
-const { sendToken } = require("../service/token");
+const { sendToken, clearToken } = require("../service/token");
 const Role = require("../models/role");
 const Constant = require("../service/Constant");
 const client = require("../server");
@@ -18,7 +18,7 @@ exports.SignupUser = CatchAsyncError(async (req, res, next) => {
       const { email, password, confirmPassword } = req.body;
   
       if (!email || !password || !confirmPassword) {
-        return next(new ErrorHandler('Please provide proper credentials', 400));
+        return response(res,'Please provide proper credentials',{},406)
       }
   
       const user = await User.findOne({ email });
@@ -26,7 +26,7 @@ exports.SignupUser = CatchAsyncError(async (req, res, next) => {
       console.log(user)
 
       if (user) {
-       return next( new ErrorHandler('Email is already in use!', 400))
+       return response(res,'Email is already in use',{},404)
       }
 
       const otp = generateOtp(); 
@@ -42,7 +42,7 @@ exports.SignupUser = CatchAsyncError(async (req, res, next) => {
       return response(res, `OTP has been sent!`, {}, 201);
   
     } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+      return response(res,error.message,error,500)
     }
   });
 
@@ -54,25 +54,23 @@ exports.VerifyOtp = CatchAsyncError(async (req, res, next) => {
     const { otp, email } = req.body;
 
     if (!otp || otp == undefined) {
-      return next(new ErrorHandler('Please provide proper credentials', 404));
+      return response(res,'Please provide proper credentials',{},406)
     }
 
     const data = await Token.findOne({email})
 
     if(!data || data == undefined || data == null){
-        return next(new ErrorHandler('Otp has been expired!, please send new otp!',401))
-    }
+        return response(res,'Otp expired!, please send new otp! ',{},404)
+      }
 
     if(otp !== data.otp){
-        return next(new ErrorHandler("Otp does't match!",401))
+        return response(res,'Email is already in use',{},404)
     }
 
     const user = await User.findOne({email : data.email})
 
-    console.log('work till hree!');
-
     if(user) {
-      return next(new ErrorHandler('User already exists!',401))
+      return response(res,'User already exists!',{},404)
     }
     
     const hashPass = await bcrypt.hash(data.password,10)
@@ -91,14 +89,14 @@ exports.VerifyOtp = CatchAsyncError(async (req, res, next) => {
     })
 
     if(!createNewUser){
-        return next(new ErrorHandler('Server Error, please try again letter!', 401))
-    }
+        return response(res,'Server Error, please try again after sometime!',{},401)
+      }
 
     response(res,'Signup successful',{user : createNewUser},201)
 
 
   } catch (error) {
-    return next(new ErrorHandler(error, 406));
+    return response(res,error.message,error,500)
   }
 });
 
@@ -106,26 +104,27 @@ exports.loginUser = CatchAsyncError(async (req, res, next) => {
     try {
       const { email, password } = req.body;
   
-      if (!email || !password) {
-        return next(new ErrorHandler('Please provide proper credentials', 400));
+      if (!email || email === undefined || !password || password === undefined) {
+        return response(res,'Please Provide proper credentials',{},406)
       }
   
       const user = await User.findOne({ email }).populate('role')
   
       if (!user || user == undefined) {
-        return next(new ErrorHandler("User doesn't exist!", 404));
+        return response(res,'User doesn\'t exists!',{},404)
       }
   
       const verifyPassword = await bcrypt.compare(password, user.password);
   
       if (!verifyPassword) {
-        return next(new ErrorHandler('Incorrect password', 401));
+        return response(res,'Incorrect Password',{},404)
+        
       }
   
       sendToken(res,user,'login successful', 200);
   
     } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+      return response(res,error.message,error,500)
     }
   });
 
@@ -137,7 +136,7 @@ exports.refreshToken = CatchAsyncError(async(req,res,next) => {
         const refreshToken = req.cookies.refresh_token
 
         if(!refreshToken || refreshToken === undefined){
-            return next(new ErrorHandler('session time out, please login again!', 404))
+          return response(res,'session time out, please login again!',{},406)  
         }
 
         const session = jwt.verify(refreshToken,process.env.REFRESH_SECRET)
@@ -145,7 +144,7 @@ exports.refreshToken = CatchAsyncError(async(req,res,next) => {
         console.log(session)
 
         if(!session || session === undefined){
-            return next(new ErrorHandler('session has been expired, login again!',406))
+          return clearToken(res,'session has been expired, please login again!',500)
         }
 
 
@@ -153,7 +152,8 @@ exports.refreshToken = CatchAsyncError(async(req,res,next) => {
 
         
         if(!check || check === undefined){
-            return next(new ErrorHandler('user not found, please login again!', 404))
+         
+          return clearToken(res,'session has been expired, please login again!',500)
         }
 
         const user = JSON.parse(check)
@@ -163,6 +163,6 @@ exports.refreshToken = CatchAsyncError(async(req,res,next) => {
         sendToken(res,user,'token refresh successful',201)
 
     } catch (error) {
-        return next(new ErrorHandler(error.message),500)
+      return response(res,error.message,error,500)
     }
 })

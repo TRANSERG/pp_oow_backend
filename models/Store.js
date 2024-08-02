@@ -4,14 +4,21 @@ const mongoose = require('mongoose')
 
 
 exports.Store = mongoose.model('Store', new mongoose.Schema({
-    name : String,
+    name : {
+        type : String,
+        trim : true,
+    },
     area : String,
     city : String,
     zip : String,
     state : String,
     country : String,
     landmark : String,
-    ManagerId : {
+    userId : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "User"
+    },
+    managers: {
         Type : mongoose.Schema.Types.ObjectId,
         ref : "User"
     },
