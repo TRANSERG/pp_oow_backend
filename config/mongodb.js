@@ -1,6 +1,6 @@
 
 
 module.exports = {
-    URL: "mongodb://localhost:27017/OWW-DASHBOARD",
+    URL: "mongodb+srv://chetanbhosale:HVd4xPmttrQHJxRk@cluster0.cexszt7.mongodb.net/",
 };
 
