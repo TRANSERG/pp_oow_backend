@@ -5,7 +5,7 @@ const z = require('zod')
 
 
 
-const validateCreateStore = z.object({
+exports.validateCreateStore = z.object({
     name : z.string(),
     store_mobile : z.string().length(10),
     store_email : z.string().email(),
