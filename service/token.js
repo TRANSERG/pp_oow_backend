@@ -9,31 +9,28 @@ const generateRefreshToken = (id) => {
 };
 
 const generateAccessToken = (id) => {
-    return jwt.sign({ id }, process.env.ACCESS_SECRET, { expiresIn: '5h' });
+    return jwt.sign({ id }, process.env.ACCESS_SECRET, { expiresIn: '5m'});
 };
 
 exports.accessTokenOptions = {
-    expires: new Date(Date.now() + 5 * 60 * 60 * 1000),
-    maxAge: 5 * 60 * 60 * 1000,
+    maxAge: 10 * 60 * 1000,
     httpOnly: true,
     sameSite: 'Lax'
 };
 
 exports.refreshTokenOptions = {
-    expires: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-    maxAge: 2 * 24 * 60 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: 'Lax'
 };
 
 exports.sendToken = async (res, user, message, statusCode) => {
-
     let accessToken = generateAccessToken(user._id);
     let refreshToken = generateRefreshToken(user._id);
 
-    user.password = undefined
-    user.createdAt = undefined
-    user.updatedAt = undefined
+    user.password = undefined;
+    user.createdAt = undefined;
+    user.updatedAt = undefined;
 
     try {
         await client.set(user._id.toString(), JSON.stringify(user), 'EX', 2 * 24 * 60 * 60); // Set expiry of 2 days
@@ -49,25 +46,22 @@ exports.sendToken = async (res, user, message, statusCode) => {
 
 exports.clearToken = async (res, message, statusCode) => {
     try {
-
-
         res.cookie("access_token", '', {
-            expires: new Date(Date.now() + 1),
             maxAge: 1,
             httpOnly: true,
             sameSite: 'Lax'
         });
 
         res.cookie("refresh_token", '', {
-            expires: new Date(Date.now() + 1),
             maxAge: 1,
             httpOnly: true,
             sameSite: 'Lax'
         });
 
         response(res, message, {}, statusCode);
-
     } catch (error) {
         response(res, error.message, error, statusCode);
     }
-}
+};
+
+

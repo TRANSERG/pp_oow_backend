@@ -129,12 +129,14 @@ exports.loginUser = CatchAsyncError(async (req, res, next) => {
   });
 
 
-exports.refreshToken = CatchAsyncError(async(req,res,next) => {
+exports.refreshToken = CatchAsyncError(async(req,res) => {
 
     try {
         
-        const refreshToken = req.cookies.refresh_token
+        console.log(req.cookies)
 
+        const refreshToken = req.cookies.refresh_token
+        
         if(!refreshToken || refreshToken === undefined){
           return response(res,'session time out, please login again!',{},406)  
         }
@@ -165,4 +167,14 @@ exports.refreshToken = CatchAsyncError(async(req,res,next) => {
     } catch (error) {
       return response(res,error.message,error,500)
     }
+})
+
+exports.me = CatchAsyncError(async(req,res) => {
+  const refresh_token = req.cookies.refresh_token;
+  const access_token = req.cookies.access_token
+  return response(res,'fetched user data',{user:req.user,access_token,refresh_token},201)
+})
+
+exports.logout = CatchAsyncError(async(req,res) => {
+  return clearToken(res,'logged out successfully!',201)
 })

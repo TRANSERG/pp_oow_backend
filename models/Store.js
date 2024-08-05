@@ -8,22 +8,25 @@ exports.Store = mongoose.model('Store', new mongoose.Schema({
         type : String,
         trim : true,
     },
-    area : String,
-    city : String,
-    zip : String,
+    currency : String,
+    store_status : {
+        type : Number,
+        default : 1,
+    },
+    address_line: String,
+    address_line_optional : String,
+    pincode : String,
     state : String,
     country : String,
     landmark : String,
-    userId : {
+    userId : String,
+    managers: [{
         type : mongoose.Schema.Types.ObjectId,
         ref : "User"
-    },
-    managers: {
-        Type : mongoose.Schema.Types.ObjectId,
-        ref : "User"
-    },
-    payment_type : [Number], // 1 : Online, 2:Cash on delivery
-    mobile_no : String,
+    }],
+    payment_type : [Number], 
+    store_mobile : String,
+    store_email : String,
     color_code : String,
     merchant_phone : String,
     merchant_email : String,
@@ -41,4 +44,5 @@ exports.Store = mongoose.model('Store', new mongoose.Schema({
         ref : "TemplateInfo"
     }
 }))
+
 
