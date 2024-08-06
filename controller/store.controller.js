@@ -19,7 +19,8 @@ exports.validateCreateStore = z.object({
 
 exports.createStore = CatchAsyncError(async(req,res) => {
     try {
-        const {name,store_mobile,store_email,address_line,address_line_optional,state,country,pincode} = validateCreateStore.parse(req.body)
+        const {name,store_mobile,store_email,address_line,address_line_optional,state,country,pincode} = req.body
+        
         
     const validateStoreName = await Store.findOne({userId: req.user.userId,name })
 
