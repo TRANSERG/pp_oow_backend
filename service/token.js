@@ -16,14 +16,14 @@ exports.accessTokenOptions = {
     maxAge: 10 * 60 * 1000,
     httpOnly: true,
     secure : true,
-    sameSite : 'None'
+    sameSite : 'Lax'
 };
 
 exports.refreshTokenOptions = {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
     secure : true,
-    sameSite : 'None'
+    sameSite : 'Lax'
 };
 
 exports.sendToken = async (res, user, message, statusCode) => {
@@ -52,14 +52,14 @@ exports.clearToken = async (res, message, statusCode) => {
             maxAge: 1,
             httpOnly: true,
             secure : true,
-            sameSite : 'None'
+            sameSite : 'Lax'
         });
 
         res.cookie("refresh_token", '', {
             maxAge: 1,
             httpOnly: true,
             secure : true,
-            sameSite : 'None'
+            sameSite : 'Lax'
         });
 
         response(res, message, {}, statusCode);
