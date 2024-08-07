@@ -15,13 +15,15 @@ const generateAccessToken = (id) => {
 exports.accessTokenOptions = {
     maxAge: 10 * 60 * 1000,
     httpOnly: true,
-    sameSite: 'Lax'
+    secure : true,
+    sameSite : 'None'
 };
 
 exports.refreshTokenOptions = {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: 'Lax'
+    secure : true,
+    sameSite : 'None'
 };
 
 exports.sendToken = async (res, user, message, statusCode) => {
@@ -49,13 +51,15 @@ exports.clearToken = async (res, message, statusCode) => {
         res.cookie("access_token", '', {
             maxAge: 1,
             httpOnly: true,
-            sameSite: 'Lax'
+            secure : true,
+            sameSite : 'None'
         });
 
         res.cookie("refresh_token", '', {
             maxAge: 1,
             httpOnly: true,
-            sameSite: 'Lax'
+            secure : true,
+            sameSite : 'None'
         });
 
         response(res, message, {}, statusCode);
