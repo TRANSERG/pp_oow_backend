@@ -19,17 +19,27 @@ exports.validateCreateStore = z.object({
 
 exports.createStore = CatchAsyncError(async(req,res) => {
     try {
-        const {name,store_mobile,store_email,address_line,address_line_optional,state,country,pincode} = req.body
+        const {name,store_id,menusharingcode,store_mobile,store_email,address_line,address_line_optional,state,country,pincode} = req.body
         
-        
+
     const validateStoreName = await Store.findOne({userId: req.user.userId,name })
 
     if(validateStoreName){
         return response(res,'store name already exists',{},401)
     }
+
+    const storeId = await Store.findOne({userId : req.user.userId, store_id})
+    
+    
+
+    if(storeId){
+        return response(res,'store ID already exists',{},401)
+    }
     
     const newStore = await Store.create({
         name,
+        store_id,
+        menusharingcode,
         address_line,
         address_line_optional,
         pincode,

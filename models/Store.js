@@ -4,6 +4,9 @@ const mongoose = require('mongoose')
 
 
 exports.Store = mongoose.model('Store', new mongoose.Schema({
+    store_id : String,
+    active : String,
+    menusharingcode : String,
     name : {
         type : String,
         trim : true,
@@ -17,6 +20,7 @@ exports.Store = mongoose.model('Store', new mongoose.Schema({
     address_line_optional : String,
     pincode : String,
     state : String,
+    town : String,
     country : String,
     landmark : String,
     userId : String,

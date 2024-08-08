@@ -6,7 +6,10 @@ const path = require('path');
 
 exports.pushMenu = CatchAsyncError(async (req, res) => {
     try {
-        const data = req.body.data;
+        const data = req.body;
+
+        console.log(data)
+
         if (!data) {
             return response(res, 'Data is required', null, 400);
         }
@@ -35,7 +38,7 @@ exports.pushMenu = CatchAsyncError(async (req, res) => {
 
 exports.updateAddon = CatchAsyncError(async (req, res) => {
     try {
-        const data = req.body.data;
+        const data = req.body
         if (!data) {
             return response(res, 'Data is required', null, 400);
         }
@@ -64,7 +67,7 @@ exports.updateAddon = CatchAsyncError(async (req, res) => {
 
 exports.updateAddon = CatchAsyncError(async (req, res) => {
     try {
-        const data = req.body.data;
+        const data = req.body
         if (!data) {
             return response(res, 'Data is required', null, 400);
         }
@@ -95,7 +98,7 @@ exports.updateAddon = CatchAsyncError(async (req, res) => {
 
 exports.getStoreStatus = CatchAsyncError(async (req, res) => {
     try {
-        const data = req.body.data;
+        const data = req.body
         if (!data) {
             return response(res, 'Data is required', null, 400);
         }
@@ -125,7 +128,7 @@ exports.getStoreStatus = CatchAsyncError(async (req, res) => {
 
 exports.updateStoreStatus = CatchAsyncError(async (req, res) => {
     try {
-        const data = req.body.data;
+        const data = req.body
         if (!data) {
             return response(res, 'Data is required', null, 400);
         }
